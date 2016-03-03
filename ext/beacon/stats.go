@@ -183,7 +183,7 @@ func (b *Beacon) startStats(id string) error {
 	}
 
 	// match rules
-	if !b.ruleMatch(c.Config) {
+	if !b.ruleMatch(c) {
 		log().Debugf("unable to find rule matching container %s (%s); not monitoring", c.Id, image)
 		return nil
 	}

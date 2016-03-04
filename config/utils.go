@@ -79,6 +79,10 @@ func SetConfigDefaults(c *ExtensionConfig) error {
 		c.SSLServerVerify = "required"
 	}
 
+	if c.StatInterval == 0 {
+		c.StatInterval = 60
+	}
+
 	return nil
 }
 

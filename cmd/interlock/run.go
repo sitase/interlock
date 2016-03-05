@@ -20,10 +20,6 @@ import (
 )
 
 const (
-	defaultConfig = `ListenAddr = ":8080"
-DockerURL = "unix:///var/run/docker.sock"
-EnableMetrics = true
-`
 	kvConfigKey = "interlock/v1/config"
 )
 
@@ -139,8 +135,7 @@ func runAction(c *cli.Context) {
 		}
 
 		if !exists {
-			log.Warnf("unable to find config in key %s; using default config", kvConfigKey)
-			data = defaultConfig
+			log.Fatalf("unable to find config in key %s", kvConfigKey)
 		} else {
 			kvPair, err := kv.Get(kvConfigKey)
 			if err != nil {
@@ -150,7 +145,7 @@ func runAction(c *cli.Context) {
 			data = string(kvPair.Value)
 
 			if data == "" {
-				data = defaultConfig
+				log.Fatalf("error parsing configuration")
 			}
 		}
 	} else {
@@ -159,8 +154,7 @@ func runAction(c *cli.Context) {
 		d, err := ioutil.ReadFile(configPath)
 		switch {
 		case os.IsNotExist(err):
-			log.Debug("no config detected; using default config")
-			data = defaultConfig
+			log.Fatalf("unable to find configuration file")
 		case err == nil:
 			data = string(d)
 		default:

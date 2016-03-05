@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	pluginName = "lb.haproxy"
+	pluginName = "haproxy"
 )
 
 type HAProxyLoadBalancer struct {

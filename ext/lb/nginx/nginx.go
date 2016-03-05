@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	pluginName = "lb.nginx"
+	pluginName = "nginx"
 )
 
 type NginxLoadBalancer struct {
@@ -63,7 +63,7 @@ func (p *NginxLoadBalancer) Reload() error {
 		return err
 	}
 
-	// restart all interlock managed haproxy containers
+	// restart all interlock managed nginx containers
 	containers, err := p.client.ListContainers(false, false, "")
 	if err != nil {
 		return err

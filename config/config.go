@@ -53,5 +53,5 @@ type Config struct {
 	AllowInsecure bool
 	EnableMetrics bool
 	Extensions    []*ExtensionConfig
-	Rules         map[string]*Rule // beacon TODO: move to ExtensionConfig
+	//Rules         map[string]*Rule // beacon TODO: move to ExtensionConfig
 }

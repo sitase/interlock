@@ -8,6 +8,18 @@ import (
 	"github.com/samalba/dockerclient"
 )
 
+var (
+	allTypes = []string{
+		"total_containers",
+		"total_images",
+		"total_images",
+		"total_networks",
+		"total_volumes",
+		"cpu",
+		"memory",
+	}
+)
+
 func (b *Beacon) sendContainerStats(id string, stats *dockerclient.Stats, ec chan error, args ...interface{}) {
 	// report on interval
 	timestamp := time.Now()
@@ -50,7 +62,7 @@ func (b *Beacon) sendContainerStats(id string, stats *dockerclient.Stats, ec cha
 	}
 
 	counterTotalContainers.With(prometheus.Labels{
-		"type": "totals",
+		"type": "total_containers",
 	}).Set(float64(len(allContainers)))
 
 	allImages, err := b.client.ListImages(true)
@@ -60,7 +72,7 @@ func (b *Beacon) sendContainerStats(id string, stats *dockerclient.Stats, ec cha
 	}
 
 	counterTotalImages.With(prometheus.Labels{
-		"type": "totals",
+		"type": "total_images",
 	}).Set(float64(len(allImages)))
 
 	allVolumes, err := b.client.ListVolumes()
@@ -75,11 +87,11 @@ func (b *Beacon) sendContainerStats(id string, stats *dockerclient.Stats, ec cha
 		return
 	}
 	counterTotalNetworks.With(prometheus.Labels{
-		"type": "totals",
+		"type": "total_networks",
 	}).Set(float64(len(networks)))
 
 	counterTotalVolumes.With(prometheus.Labels{
-		"type": "totals",
+		"type": "total_volumes",
 	}).Set(float64(len(allVolumes)))
 
 	totalUsage := stats.CpuStats.CpuUsage.TotalUsage
@@ -199,9 +211,11 @@ func (b *Beacon) handleStats(id string, cb dockerclient.StatCallback, ec chan er
 	go b.client.StartMonitorStats(id, cb, ec, args...)
 }
 
-func (b *Beacon) resetStats(id string) error {
-	// TODO: only reset the container
-
+// resetStats resets all stats for the counters.  since the fields are
+// unique it isn't possible to use Delete to remove the values.  we instead
+// reset all counters and then trigger a reload to populate the current metrics
+// causing stale metrics to be removed
+func (b *Beacon) resetStats() error {
 	for _, c := range allCounters {
 		c.Reset()
 	}

@@ -56,7 +56,7 @@ func (b *Beacon) Name() string {
 
 func (b *Beacon) HandleEvent(event *dockerclient.Event) error {
 	switch event.Status {
-	case "interlock-start":
+	case "interlock-start", "interlock-reload":
 		// scan all containers and start metrics
 		containers, err := b.client.ListContainers(false, false, "")
 		if err != nil {
@@ -75,10 +75,17 @@ func (b *Beacon) HandleEvent(event *dockerclient.Event) error {
 			return err
 		}
 	case "kill", "die", "stop", "destroy":
-		log().Debugf("resetting stats: id=%s", event.ID)
-		if err := b.resetStats(event.ID); err != nil {
+		if err := b.resetStats(); err != nil {
 			return err
 		}
+
+		log().Debug("metrics reset; triggering reload")
+
+		// issue a reload immediately to add the current metrics
+		// after purging the stale metrics
+		b.HandleEvent(&dockerclient.Event{
+			Status: "interlock-reload",
+		})
 	}
 
 	return nil

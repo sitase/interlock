@@ -38,3 +38,7 @@ EnableMetrics = true
 [[extensions]]
     Name = "beacon"
     StatInterval = 10
+    [extensions.rules]
+        [extensions.rules.all]
+            Type = "name"
+            Regex = ".*"

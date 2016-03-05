@@ -98,9 +98,6 @@ func ParseConfig(data string) (*Config, error) {
 		if err := SetConfigDefaults(ext); err != nil {
 			return nil, err
 		}
-
-		// FIXME: toml isn't being parse right so we hack the rules in like so
-		ext.Rules = cfg.Rules
 	}
 
 	return &cfg, nil

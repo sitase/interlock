@@ -1,7 +1,7 @@
 BUILDTAGS=interlock
 CGO_ENABLED=0
-GOOS=linux
-GOARCH=amd64
+export GOOS=linux
+export GOARCH=amd64
 COMMIT=`git rev-parse --short HEAD`
 APP=interlock
 REPO?=ehazlett/$(APP)
@@ -44,4 +44,3 @@ clean:
 	@rm cmd/$(APP)/$(APP)
 
 .PHONY: add-deps build build-static build-app build-image image clean test
-
